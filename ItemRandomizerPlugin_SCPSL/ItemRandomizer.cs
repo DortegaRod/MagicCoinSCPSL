@@ -1,4 +1,4 @@
-namespace ItemRandomizerPlugin {
+﻿namespace ItemRandomizerPlugin {
 
     using Exiled.API.Features;
     using Exiled.Events.EventArgs.Map;
@@ -12,9 +12,9 @@ namespace ItemRandomizerPlugin {
 
         public PlayerHandler _playerHandler;
 
-        public override string Name => "ItemRandomizerPlugin";
-        public override string Prefix => "IRndPl";
-        public override string Author => "Megador";
+        public override string Name => "MagicCoinSCPSL";
+        public override string Prefix => "MagicCoin";
+        public override string Author => "Megalón";
         public override Version Version => new Version(1, 1, 0);
         public override Version RequiredExiledVersion => new Version(8, 9, 11);
 
@@ -30,7 +30,7 @@ namespace ItemRandomizerPlugin {
             Server.RoundEnded += _playerHandler.OnRoundEnded;
             Map.Decontaminating += OnDecontaminating;
 
-            Log.Info("ItemRandomizerPlugin loaded successfully");
+            Log.Info("MagicCoinSCPSL loaded successfully");
             base.OnEnabled();
         }
 

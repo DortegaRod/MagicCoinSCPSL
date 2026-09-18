@@ -1,4 +1,4 @@
-using Exiled.API.Interfaces;
+﻿using Exiled.API.Interfaces;
 using System.ComponentModel;
 
 namespace ItemRandomizerPlugin {
@@ -11,7 +11,7 @@ namespace ItemRandomizerPlugin {
         // Coin teleport
         // ------------------------------------------------------------------
         [Description("Shown when a player flips a coin that has already been spent.")]
-        public string CoinAlreadyUsed { get; set; } = "<color=#888888>Esta moneda ya esta gastada.</color>";
+        public string CoinAlreadyUsed { get; set; } = "<color=#888888>Esta moneda ya está gastada.</color>";
 
         [Description("Shown during the delay between the flip and the teleport.")]
         public string TeleportPending { get; set; } = "<color=#ffcc00>La moneda decide tu destino...</color>";
@@ -35,7 +35,7 @@ namespace ItemRandomizerPlugin {
         public string PocketEscape { get; set; } = "<color=#33ff66>Cara. Sales... encima de {0}.</color>";
 
         [Description("Shown to the player somebody just landed on. {0} = the escapee's nickname.")]
-        public string PocketEscapeVictim { get; set; } = "<color=#ffcc00>{0} acaba de salir de la dimension de bolsillo encima de ti.</color>";
+        public string PocketEscapeVictim { get; set; } = "<color=#ffcc00>{0} acaba de salir de la dimensión de bolsillo encima de ti.</color>";
 
         // ------------------------------------------------------------------
         // Tails roulette
@@ -58,21 +58,21 @@ namespace ItemRandomizerPlugin {
 
         public string TailsFlashbang { get; set; } = "<color=#ff6666>La moneda te deslumbra.</color>";
 
-        public string TailsTantrum { get; set; } = "<color=#ff6666>Algo ha pasado por aqui.</color>";
+        public string TailsTantrum { get; set; } = "<color=#ff6666>Algo ha pasado por aquí.</color>";
 
-        public string TailsFakeCassie { get; set; } = "<color=#ff6666>La moneda ha mentido a toda la instalacion.</color>";
+        public string TailsFakeCassie { get; set; } = "<color=#ff6666>La moneda ha mentido a toda la instalación.</color>";
 
         // ------------------------------------------------------------------
         // Server-wide
         // ------------------------------------------------------------------
         [Description("Broadcast when a player dies shortly after a coin teleport. {0} = nickname.")]
-        public string DeathCallout { get; set; } = "<color=#ffcc00>{0} confio en la moneda. La moneda no confio en el.</color>";
+        public string DeathCallout { get; set; } = "<color=#ffcc00>{0} confió en la moneda. La moneda no confió en él.</color>";
 
         [Description("Broadcast on a jackpot roll. {0} = nickname, {1} = item.")]
-        public string JackpotBroadcast { get; set; } = "<color=#ffcc00>{0} ha ganado la loteria de la Fundacion: {1}</color>";
+        public string JackpotBroadcast { get; set; } = "<color=#ffcc00>{0} ha ganado la lotería de la Fundación: {1}</color>";
 
         [Description("Broadcast at round end. {0} = coin deaths, {1} = total flips.")]
-        public string RoundEndStats { get; set; } = "<color=#ffcc00>La moneda se cobro {0} vidas hoy, en {1} tiradas.</color>";
+        public string RoundEndStats { get; set; } = "<color=#ffcc00>La moneda se cobró {0} vidas hoy, en {1} tiradas.</color>";
 
         [Description("Broadcast when Light Containment starts decontaminating.")]
         public string DecontaminationBroadcast { get; set; } = "COIN TP ENABLED IN ALL THE FACILITY";

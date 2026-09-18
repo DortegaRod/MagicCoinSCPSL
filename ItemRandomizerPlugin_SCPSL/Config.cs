@@ -1,4 +1,4 @@
-using Exiled.API.Enums;
+﻿using Exiled.API.Enums;
 using Exiled.API.Interfaces;
 using ItemRandomizerPlugin_SCPSL.RoomPoints;
 using PlayerRoles;

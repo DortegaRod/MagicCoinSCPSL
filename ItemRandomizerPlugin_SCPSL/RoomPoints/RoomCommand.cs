@@ -1,4 +1,4 @@
-using CommandSystem;
+﻿using CommandSystem;
 using Exiled.API.Features;
 using Exiled.Permissions.Extensions;
 using System;
@@ -7,7 +7,7 @@ using UnityEngine;
 namespace ItemRandomizerPlugin_SCPSL.RoomPoints {
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
     public class RoomPoint : ICommand {
-        private const string RequiredPermission = "irndpl.roompoint";
+        private const string RequiredPermission = "magiccoin.roompoint";
         private const float MaxDistance = 100f;
 
         public string Command { get; } = "roompoint";
