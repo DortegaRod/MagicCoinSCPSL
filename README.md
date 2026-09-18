@@ -127,24 +127,27 @@ about to be there.
 **Tails does not spend the coin.** You keep flipping until heads finally lands — but every tails
 makes you **bigger**, and it stacks.
 
-| Tails in a row | Your size |
-|:---:|:---:|
-| 1 | 115% |
-| 2 | 130% |
-| 3 | 145% |
-| 5 | 175% |
-| 7 or more | 200% *(capped)* |
+| Tails in a row | Your size | Movement |
+|:---:|:---:|:---:|
+| 1 | 115% | -3% |
+| 2 | 130% | -6% |
+| 3 | 145% | -9% |
+| 5 | 175% | -15% |
+| 7 or more | 200% *(capped)* | -20% |
 
-Heads hands your size back along with the teleport. The growth lands after the same three second
+Carrying more of yourself around costs something, so the slowdown scales with your size: barely
+there on the first tails, a real handicap near the cap. Heads hands both back along with the
+teleport. The growth lands after the same three second
 delay, so it arrives when the coin does rather than before you have seen it spin.
 
 Growing is the one punishment that is never secretly a reward. A small player is a *harder* target;
-a big one is easier to hit, easier to spot down a corridor, and past a certain size stops fitting
-through doorways. The more you push your luck, the more you advertise it.
+a big one is easier to hit, easier to spot down a corridor, slower to get away, and past a certain
+size stops fitting through doorways. The more you push your luck, the more you advertise it.
 
 > [!TIP]
 > The escalation is what makes unlimited flipping fair. The first tails barely registers; by the
-> fifth you are a landmark. Tune it with `tails_growth_step` and `tails_growth_max`.
+> fifth you are a slow, wide landmark. Tune it with `tails_growth_step`, `tails_growth_max` and
+> `tails_growth_slowness_at_max`.
 
 #### The old roulette
 
@@ -282,13 +285,8 @@ the list.
 |---|---|:---:|---|
 | `teleport_delay` | float | `3` | Seconds between the flip and the effect |
 | `sink_hole_duration` | float | `5` | Duration of the `SinkHole` effect on arrival |
-| `consume_coin_on_tails` | bool | `false` | Tails burns the coin too. Off so you can keep flipping |
 | `lcz_rooms` | list | 12 rooms | Possible destinations inside Light Containment |
 | `non_lcz_rooms` | list | 32 rooms | Possible destinations outside Light Containment |
-
-> [!CAUTION]
-> Only turn `consume_coin_on_tails` on if you also set `tails_punishment` to `None`. With a
-> punishment active it makes coins single-use again, which is the thing growth was added to fix.
 
 ### SCP-173 machine
 
@@ -310,6 +308,7 @@ the list.
 | `tails_punishment` | enum | `Growth` | `Growth`, `Roulette` or `None` |
 | `tails_growth_step` | float | `0.15` | How much bigger each tails makes you, as a fraction of normal size |
 | `tails_growth_max` | float | `2` | Size cap. Past roughly `2.2` players start getting stuck in doorways |
+| `tails_growth_slowness_at_max` | int | `20` | How much slower you move at the cap, as a percentage. Scales with size. `0` makes growth cosmetic |
 
 Roulette mode only — ignored while `tails_punishment` is `Growth`:
 

@@ -50,9 +50,6 @@ namespace ItemRandomizerPlugin {
         [Description("Duration of the SinkHole effect applied on arrival.")]
         public float SinkHoleDuration { get; set; } = 5f;
 
-        [Description("Burn the coin when the flip lands on tails. Off by default: the coin is meant to be flipped until it finally comes up heads, and the growth punishment is what makes spamming it expensive. Only turn this on if you set tails_punishment to None.")]
-        public bool ConsumeCoinOnTails { get; set; } = false;
-
         [Description("Rooms a coin can send you to while you are inside Light Containment.")]
         public List<RoomType> LczRooms { get; set; } = new List<RoomType> {
             RoomType.LczCurve,
@@ -204,6 +201,9 @@ namespace ItemRandomizerPlugin {
 
         [Description("Hard cap on how big the coin can make you. Growth stops here no matter how many times you flip tails. Push this past ~2.2 and players start getting stuck in doorways, which may or may not be what you want.")]
         public float TailsGrowthMax { get; set; } = 2f;
+
+        [Description("How much slower you move at the maximum size, as a percentage. Scales linearly with your size, so at half way to the cap you are half this slow. Set to 0 to make growth purely cosmetic.")]
+        public int TailsGrowthSlownessAtMax { get; set; } = 20;
 
         // ---- Roulette mode ----
         [Description("Relative weight of each tails outcome, used only when tails_punishment is Roulette. Set one to 0 to disable it. Valid ids: swap_inventories, swap_positions, severed_hands, shrink, giant, sugar_rush, candy, flashbang, tantrum, fake_cassie.")]

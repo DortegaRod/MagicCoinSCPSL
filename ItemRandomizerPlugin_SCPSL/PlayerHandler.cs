@@ -62,8 +62,10 @@ namespace ItemRandomizerPlugin {
                 return;
 
             // A new life always starts at normal size, whatever the coin did to the last one.
-            if (growthScale.Remove(player.Id) && player.IsConnected)
+            if (growthScale.Remove(player.Id) && player.IsConnected) {
                 player.Scale = Vector3.one;
+                player.DisableEffect(EffectType.Slowness);
+            }
 
             if (!player.IsAlive || player.IsScp || player.IsInventoryFull)
                 return;
@@ -157,11 +159,10 @@ namespace ItemRandomizerPlugin {
                 if (Config.TailsPunishment == TailsPunishmentMode.None)
                     return;
 
-                if (Config.ConsumeCoinOnTails && serial != 0)
-                    usedCoins.Add(serial);
-
-                // Delayed like the teleport so the punishment lands when the coin does, not
-                // before the player has even seen it spin.
+                // Tails never spends the coin - you flip until it finally comes up heads, and the
+                // stacking growth is what makes pushing your luck expensive. Delayed like the
+                // teleport so the punishment lands when the coin does, rather than before the
+                // player has even seen it spin.
                 Notify(player, Translation.TeleportPending, (ushort)Mathf.Max(1f, Config.TeleportDelay));
                 Track(Timing.CallDelayed(Config.TeleportDelay, () => {
                     if (player == null || !player.IsConnected || !player.IsAlive)
@@ -438,12 +439,39 @@ namespace ItemRandomizerPlugin {
 
             growthScale[player.Id] = next;
             player.Scale = Vector3.one * next;
+            ApplyGrowthSlowness(player, next);
 
             bool capped = next >= Config.TailsGrowthMax - 0.001f;
             string message = capped ? Translation.TailsGrowthCapped : Translation.TailsGrowth;
             player.ShowHint(string.Format(message, Mathf.RoundToInt(next * 100f)), 5f);
 
             Log.Debug($"{player.Nickname} flipped tails -> size {next:0.00}x{(capped ? " (capped)" : string.Empty)}.");
+        }
+
+        /// <summary>
+        /// Carrying more of yourself around should cost something, so the slowdown scales linearly
+        /// with how far above normal size the coin has pushed the player: barely noticeable on the
+        /// first tails, a real handicap once they are near the cap. The effect is left open-ended
+        /// and cleared by <see cref="ResetGrowth"/>, so it lasts exactly as long as the size does.
+        /// </summary>
+        private static void ApplyGrowthSlowness(Player player, float scale) {
+            int atMax = Config.TailsGrowthSlownessAtMax;
+            float span = Config.TailsGrowthMax - 1f;
+
+            if (atMax <= 0 || span <= 0f) {
+                player.DisableEffect(EffectType.Slowness);
+                return;
+            }
+
+            float ratio = Mathf.Clamp01((scale - 1f) / span);
+            byte intensity = (byte)Mathf.Clamp(Mathf.RoundToInt(atMax * ratio), 0, 255);
+
+            if (intensity == 0) {
+                player.DisableEffect(EffectType.Slowness);
+                return;
+            }
+
+            player.ChangeEffectIntensity(EffectType.Slowness, intensity, 0f);
         }
 
         /// <summary>
@@ -456,6 +484,7 @@ namespace ItemRandomizerPlugin {
                 return;
 
             player.Scale = Vector3.one;
+            player.DisableEffect(EffectType.Slowness);
             Notify(player, Translation.GrowthReset, 4);
         }
 
@@ -478,8 +507,10 @@ namespace ItemRandomizerPlugin {
 
             foreach (int playerId in growthScale.Keys.ToList()) {
                 Player grown = Player.Get(playerId);
-                if (grown != null && grown.IsConnected)
+                if (grown != null && grown.IsConnected) {
                     grown.Scale = Vector3.one;
+                    grown.DisableEffect(EffectType.Slowness);
+                }
             }
 
             coroutines.Clear();
