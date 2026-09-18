@@ -6,6 +6,20 @@ using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace ItemRandomizerPlugin {
+    /// <summary>
+    /// What tails does to the player.
+    /// </summary>
+    public enum TailsPunishmentMode {
+        /// <summary>Nothing. Tails is a pure miss.</summary>
+        None,
+
+        /// <summary>Every tails makes the player bigger, stacking until they finally flip heads.</summary>
+        Growth,
+
+        /// <summary>The weighted roulette of one-off punishments.</summary>
+        Roulette,
+    }
+
     public class Config : IConfig {
         public bool IsEnabled { get; set; } = true;
 
@@ -36,8 +50,8 @@ namespace ItemRandomizerPlugin {
         [Description("Duration of the SinkHole effect applied on arrival.")]
         public float SinkHoleDuration { get; set; } = 5f;
 
-        [Description("Also burn the coin when the flip lands on tails. Leave true or players will farm the tails roulette. Never applies inside the pocket dimension, where the flip is a free 50/50.")]
-        public bool ConsumeCoinOnTails { get; set; } = true;
+        [Description("Burn the coin when the flip lands on tails. Off by default: the coin is meant to be flipped until it finally comes up heads, and the growth punishment is what makes spamming it expensive. Only turn this on if you set tails_punishment to None.")]
+        public bool ConsumeCoinOnTails { get; set; } = false;
 
         [Description("Rooms a coin can send you to while you are inside Light Containment.")]
         public List<RoomType> LczRooms { get; set; } = new List<RoomType> {
@@ -179,11 +193,20 @@ namespace ItemRandomizerPlugin {
         public string JackpotCassieMessage { get; set; } = "attention . a subject has won the lottery";
 
         // ------------------------------------------------------------------
-        // Tails roulette (outside the pocket dimension)
+        // Tails punishment (outside the pocket dimension)
         // ------------------------------------------------------------------
-        public bool TailsRouletteEnabled { get; set; } = true;
+        [Description("What tails does. Growth (default): every tails makes you bigger, stacking until you finally hit heads. Roulette: the old weighted table of one-off punishments. None: tails does nothing.")]
+        public TailsPunishmentMode TailsPunishment { get; set; } = TailsPunishmentMode.Growth;
 
-        [Description("Relative weight of each tails outcome. Set one to 0 to disable it. Valid ids: swap_inventories, swap_positions, severed_hands, shrink, giant, sugar_rush, candy, flashbang, tantrum, fake_cassie.")]
+        // ---- Growth mode ----
+        [Description("How much bigger each tails makes you, as a fraction of your normal size. 0.15 means the first tails puts you at 115%, the second at 130%, and so on.")]
+        public float TailsGrowthStep { get; set; } = 0.15f;
+
+        [Description("Hard cap on how big the coin can make you. Growth stops here no matter how many times you flip tails. Push this past ~2.2 and players start getting stuck in doorways, which may or may not be what you want.")]
+        public float TailsGrowthMax { get; set; } = 2f;
+
+        // ---- Roulette mode ----
+        [Description("Relative weight of each tails outcome, used only when tails_punishment is Roulette. Set one to 0 to disable it. Valid ids: swap_inventories, swap_positions, severed_hands, shrink, giant, sugar_rush, candy, flashbang, tantrum, fake_cassie.")]
         public Dictionary<string, int> TailsOutcomeWeights { get; set; } = new Dictionary<string, int> {
             { "flashbang", 18 },
             { "sugar_rush", 16 },

@@ -38,7 +38,19 @@ namespace ItemRandomizerPlugin {
         public string PocketEscapeVictim { get; set; } = "<color=#ffcc00>{0} acaba de salir de la dimensión de bolsillo encima de ti.</color>";
 
         // ------------------------------------------------------------------
-        // Tails roulette
+        // Tails: growth mode
+        // ------------------------------------------------------------------
+        [Description("Shown on every tails while growth is stacking. {0} = your new size as a percentage.")]
+        public string TailsGrowth { get; set; } = "<color=#ff6666>Cruz. La moneda te hace más grande. ({0}%)</color>";
+
+        [Description("Shown on the tails that pushes you to the size cap. {0} = the cap as a percentage.")]
+        public string TailsGrowthCapped { get; set; } = "<color=#ff3333>Cruz. Ya no puedes crecer más. ({0}%)</color>";
+
+        [Description("Shown when heads finally lands and the coin gives you your size back.")]
+        public string GrowthReset { get; set; } = "<color=#33ff66>Cara. Vuelves a tu tamaño.</color>";
+
+        // ------------------------------------------------------------------
+        // Tails: roulette mode
         // ------------------------------------------------------------------
         [Description("{0} = the other player's nickname.")]
         public string TailsSwapInventories { get; set; } = "<color=#ff6666>Tu inventario se ha ido con {0}.</color>";

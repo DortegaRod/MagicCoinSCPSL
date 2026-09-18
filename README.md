@@ -20,7 +20,7 @@ A plugin for **SCP: Secret Laboratory** servers running the [EXILED](https://git
 - [How the coin works](#how-the-coin-works)
 - [Mechanics](#mechanics)
   - [🌀 The pocket dimension](#-the-pocket-dimension)
-  - [💀 The tails roulette](#-the-tails-roulette)
+  - [💀 Tails: you grow](#-tails-you-grow)
   - [💃 The coin dance](#-the-coin-dance)
   - [🎰 The SCP-173 machine](#-the-scp-173-machine)
   - [📢 Server-wide comedy](#-server-wide-comedy)
@@ -63,7 +63,8 @@ flowchart TD
     F -->|"Yes"| G["Nothing happens"]
     F -->|"No"| H{"Heads or tails?"}
 
-    H -->|"Tails"| I["Punishment roulette"]
+    H -->|"Tails"| I["You grow bigger"]
+    I -.->|"coin survives - flip again"| A
     H -->|"Heads"| J{"Where are you?"}
 
     J -->|"Light Containment"| K["Random LCZ room"]
@@ -88,8 +89,8 @@ flowchart TD
 
 | Where | Heads | Tails |
 |---|---|---|
-| **Light Containment** | Another LCZ room | Punishment roulette |
-| **Outside LCZ** | Another room, *only after decontamination* | Punishment roulette |
+| **Light Containment** | Another LCZ room | You grow bigger, coin survives |
+| **Outside LCZ** | Another room, *only after decontamination* | You grow bigger, coin survives |
 | **Pocket dimension** | You land on top of someone, with a flashbang | Death on a countdown |
 
 Flipping a coin that has already been spent does nothing but print a notice: *"this coin is
@@ -121,11 +122,37 @@ about to be there.
 
 ---
 
-### 💀 The tails roulette
+### 💀 Tails: you grow
 
-Outside the pocket dimension, tails draws a punishment from a **weighted table**. It lands after
-the same three second delay as the teleport, so the consequence arrives when the coin does rather
-than before the player has seen it spin.
+**Tails does not spend the coin.** You keep flipping until heads finally lands — but every tails
+makes you **bigger**, and it stacks.
+
+| Tails in a row | Your size |
+|:---:|:---:|
+| 1 | 115% |
+| 2 | 130% |
+| 3 | 145% |
+| 5 | 175% |
+| 7 or more | 200% *(capped)* |
+
+Heads hands your size back along with the teleport. The growth lands after the same three second
+delay, so it arrives when the coin does rather than before you have seen it spin.
+
+Growing is the one punishment that is never secretly a reward. A small player is a *harder* target;
+a big one is easier to hit, easier to spot down a corridor, and past a certain size stops fitting
+through doorways. The more you push your luck, the more you advertise it.
+
+> [!TIP]
+> The escalation is what makes unlimited flipping fair. The first tails barely registers; by the
+> fifth you are a landmark. Tune it with `tails_growth_step` and `tails_growth_max`.
+
+#### The old roulette
+
+The weighted table of one-off punishments is still in the plugin, switched off. Set
+`tails_punishment` to `Roulette` to use it instead of growth.
+
+<details>
+<summary><b>The ten outcomes and their weights</b></summary>
 
 | Id | Weight | What it does to you |
 |---|:---:|---|
@@ -142,6 +169,8 @@ than before the player has seen it spin.
 
 Weights are relative and live in the config. Set one to **`0`** to disable that outcome without
 touching code.
+
+</details>
 
 > [!IMPORTANT]
 > Players inside the pocket dimension are **never** eligible for the swaps. Otherwise
@@ -253,13 +282,13 @@ the list.
 |---|---|:---:|---|
 | `teleport_delay` | float | `3` | Seconds between the flip and the effect |
 | `sink_hole_duration` | float | `5` | Duration of the `SinkHole` effect on arrival |
-| `consume_coin_on_tails` | bool | `true` | Tails burns the coin too |
+| `consume_coin_on_tails` | bool | `false` | Tails burns the coin too. Off so you can keep flipping |
 | `lcz_rooms` | list | 12 rooms | Possible destinations inside Light Containment |
 | `non_lcz_rooms` | list | 32 rooms | Possible destinations outside Light Containment |
 
 > [!CAUTION]
-> Leaving `consume_coin_on_tails` at `false` lets players farm the punishment roulette forever. It
-> only makes sense if you disable the roulette entirely.
+> Only turn `consume_coin_on_tails` on if you also set `tails_punishment` to `None`. With a
+> punishment active it makes coins single-use again, which is the thing growth was added to fix.
 
 ### SCP-173 machine
 
@@ -274,11 +303,18 @@ the list.
 | `announce_jackpot` | bool | `true` | Enables the C.A.S.S.I.E. announcement |
 | `jackpot_cassie_message` | string | *see above* | Jackpot C.A.S.S.I.E. line |
 
-### Tails roulette
+### Tails punishment
 
 | Key | Type | Default | What it does |
 |---|---|:---:|---|
-| `tails_roulette_enabled` | bool | `true` | Enables the roulette |
+| `tails_punishment` | enum | `Growth` | `Growth`, `Roulette` or `None` |
+| `tails_growth_step` | float | `0.15` | How much bigger each tails makes you, as a fraction of normal size |
+| `tails_growth_max` | float | `2` | Size cap. Past roughly `2.2` players start getting stuck in doorways |
+
+Roulette mode only — ignored while `tails_punishment` is `Growth`:
+
+| Key | Type | Default | What it does |
+|---|---|:---:|---|
 | `tails_outcome_weights` | map | *see table* | Weight per outcome. `0` disables it |
 | `scale_outcome_duration` | float | `15` | How long shrink/giant last |
 | `shrink_scale` | float | `0.4` | Size multiplier when shrinking |
@@ -333,6 +369,9 @@ They can be rewritten without recompiling. The shipped defaults are in Spanish.
 | `pocket_doom` | Last warning before the grenade |
 | `pocket_escape` | You escape. `{0}` = who you land on |
 | `pocket_escape_victim` | Someone lands on you. `{0}` = who |
+| `tails_growth` | Every tails while growth stacks. `{0}` = your new size as a percentage |
+| `tails_growth_capped` | The tails that pushes you to the cap. `{0}` = the cap |
+| `growth_reset` | Heads lands and the coin gives your size back |
 | `tails_swap_inventories` | `{0}` = the other player |
 | `tails_swap_positions` | `{0}` = the other player |
 | `tails_severed_hands` | Severed hands punishment |
